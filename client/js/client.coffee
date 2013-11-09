@@ -29,8 +29,11 @@ Prompt = {
         Prompt.hist(Prompt.count + ">", cmd)
         out = Controller.get(cmd, Prompt.next)
     next: (out) ->
-        block = $('<div class="output"/>').text("$" + out + "$")
-        $('#container').append(block)
+        segments = out.split('\n')
+        block = $('<div class="output"/>').text("$" + segments[0] + "$")
+        line1 = $('<div class="output texcode"/>').text(segments[0])
+        line2 = $('<div class="output mathcode"/>').text(segments[1])
+        $('#container').append(block, line1, line2)
         update()
         Prompt.count += 1
         Prompt.active.show()
@@ -60,6 +63,7 @@ $ ->
             when 13 then Prompt.submit()
             when 38 then Prompt.up()
             when 40 then Prompt.down()
+            when 17, 91 then false
             else Prompt.active.find(".prompt-c").focus()
     ).click( (e) -> Prompt.active.find(".prompt-c").focus() if e.target == this )
     Prompt.active.find(".prompt-c").focus()

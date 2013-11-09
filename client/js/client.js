@@ -44,9 +44,12 @@ Prompt = {
     return out = Controller.get(cmd, Prompt.next);
   },
   next: function(out) {
-    var block;
-    block = $('<div class="output"/>').text("$" + out + "$");
-    $('#container').append(block);
+    var block, line1, line2, segments;
+    segments = out.split('\n');
+    block = $('<div class="output"/>').text("$" + segments[0] + "$");
+    line1 = $('<div class="output texcode"/>').text(segments[0]);
+    line2 = $('<div class="output mathcode"/>').text(segments[1]);
+    $('#container').append(block, line1, line2);
     update();
     Prompt.count += 1;
     Prompt.active.show();
@@ -85,6 +88,9 @@ $(function() {
         return Prompt.up();
       case 40:
         return Prompt.down();
+      case 17:
+      case 91:
+        return false;
       default:
         return Prompt.active.find(".prompt-c").focus();
     }
