@@ -1,7 +1,7 @@
 Controller = {
     url: 'http://172.26.11.226:8000/'
     get: (msg, callback) ->
-        $.post( Controller.url, msg, callback )
+        $.post( Controller.url, {data: msg}, callback )
 }
 
 Prompt = {
