@@ -43,9 +43,9 @@ app.post('/', function(request, response){
 			response.send(stdout + "\n");
 		});
 
-	var delim = "%%%";
-    child.stdin.write("Data = " + request.body.data + delim +
-    				  "TeXForm[Data]" + delim +
+    child.stdin.write("Data = " + request.body.data + "\n" +
+    				  "TeXForm[Data]\n" +
+    				  "Print[OutputForm[\"%%%\"]]\n" +
     				  "InputForm[Data]");
     child.stdin.end();
 
