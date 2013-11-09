@@ -1,6 +1,22 @@
+
+
+
 <!DOCTYPE html>
 <html>
  <head>
+
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" ></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js" ></script>
+  <script type="text/javascript" src="js/client.js"></script>
+
+  <script type="text/x-mathjax-config">
+     MathJax.Hub.Config({
+        showProcessingMessages: false,
+        tex2jax: { inlineMath: [['$','$'],['\\(','\\)']] }
+     });
+  </script>
+  <script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
   <meta charset="UTF-8">
   <title>Tungsten</title>
   <style>
@@ -66,14 +82,13 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f1e767', end
 
     }
   </style>
-  <script type="text/javascript" src="js/jquery-2.0.3.min.js"></script>
-  <script type="text/javascript" src="js/client.js"></script>
  </head>
  <body spellcheck="false">
   <div id="header">
     W<sub>&alpha;</sub>
   </div>
   <div id="wrapper">
+    <p> Example: $x \neq 0$ </p>
     <div id="container"></div>
     <div id="prompt"></div>
   </div>
