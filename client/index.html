@@ -8,12 +8,11 @@
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" ></script>
   <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js" ></script>
   <script type="text/javascript" src="js/client.js"></script>
-  <script type="text/javascript" src="js/mathjax.js"></script>
 
   <script type="text/x-mathjax-config">
      MathJax.Hub.Config({
         showProcessingMessages: false,
-        tex2jax: { inlineMath: [['$','$'],['\\(','\\)']] }
+        tex2jax: { inlineMath: [['$$','$$'],['\\(','\\)']] }
      });
   </script>
   <script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
@@ -32,6 +31,7 @@
         padding: 0;
         background-color: #f0ebdf;
         font-family: 'Menlo', monospace;
+        overflow-x: hidden;
     }
     #wrapper {
       padding: 2em;
@@ -43,6 +43,7 @@
       font-weight: bold;
       display: inline-block;
       margin-right: 0.5em;
+      color: #cc5555;
     }
     input.prompt-c {
       padding: 0;
@@ -78,26 +79,61 @@
 
       border-bottom: 1px solid #422;
 
-background: #f1e767; /* Old browsers */
-background: -moz-linear-gradient(top,  #f1e767 0%, #feb645 100%); /* FF3.6+ */
-background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#f1e767), color-stop(100%,#feb645)); /* Chrome,Safari4+ */
-background: -webkit-linear-gradient(top,  #f1e767 0%,#feb645 100%); /* Chrome10+,Safari5.1+ */
-background: -o-linear-gradient(top,  #f1e767 0%,#feb645 100%); /* Opera 11.10+ */
-background: -ms-linear-gradient(top,  #f1e767 0%,#feb645 100%); /* IE10+ */
-background: linear-gradient(to bottom,  #f1e767 0%,#feb645 100%); /* W3C */
-filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f1e767', endColorstr='#feb645',GradientType=0 ); /* IE6-9 */
+      background: #f1e767; /* Old browsers */
+      background: -moz-linear-gradient(top,  #f1e767 0%, #feb645 100%); /* FF3.6+ */
+      background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#f1e767), color-stop(100%,#feb645)); /* Chrome,Safari4+ */
+      background: -webkit-linear-gradient(top,  #f1e767 0%,#feb645 100%); /* Chrome10+,Safari5.1+ */
+      background: -o-linear-gradient(top,  #f1e767 0%,#feb645 100%); /* Opera 11.10+ */
+      background: -ms-linear-gradient(top,  #f1e767 0%,#feb645 100%); /* IE10+ */
+      background: linear-gradient(to bottom,  #f1e767 0%,#feb645 100%); /* W3C */
+      filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f1e767', endColorstr='#feb645',GradientType=0 ); /* IE6-9 */
+    }
+    #header div {
+      display: inline-block;
+    }
 
+    #options {
+      position: absolute;
+      padding-left: 50px;
+      margin-top: -3px;
+    }
 
+    #options > button {
+      width: 45px;
+      height: 30px;
+      border-radius: 3px;
+      outline: none;
+      font-weight: bold;
+
+      background-color: rgb(255, 236, 186);
+      border: 1px outset #cc9;
+    }
+
+    #options > button.down {
+      background-color: #e95;
+      border: 1px inset #976;
+    }
+
+    #toggl3 {
+      font-family: monospace;
     }
   </style>
   
  </head>
  <body spellcheck="false">
   <div id="header">
+    <div id="wa">
     W<sub>&alpha;</sub>
+    </div>
+
+    <div id="options">
+      <button id="toggl1" class="down">&pi;</button>
+      <button id="toggl2">$\pi$</button>
+      <button id="toggl3">Pi</button>
+    </div>
+  </div>
   </div>
   <div id="wrapper">
-    <p> Example: $x \neq 0$ </p>
     <div id="container"></div>
     <div id="prompt"></div>
   </div>

@@ -40,7 +40,7 @@ app.post('/', function(request, response){
 
 	child = exec('/Applications/Mathematica.app/Contents/MacOS/MathKernel -noprompt',
 		function (error, stdout, stderr) {
-			response.send("$" + stdout + "$\n");
+			response.send(stdout + "\n");
 		});
 
     child.stdin.write("TeXForm[" + request.body.data + "]\n");

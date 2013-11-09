@@ -45,7 +45,7 @@ Prompt = {
   },
   next: function(out) {
     var block;
-    block = $('<div class="output"/>').text(out);
+    block = $('<div class="output"/>').text("$$" + out + "$$");
     $('#container').append(block);
     update();
     Prompt.count += 1;
