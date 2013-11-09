@@ -17,6 +17,7 @@ Prompt = {
   results: [],
   history_pos: 0,
   toggles: [true, false, false],
+  dots: null,
   make: function(prefix, content) {
     var block, c, p;
     p = $('<div class="prompt-p"/>').text(prefix);
@@ -40,6 +41,7 @@ Prompt = {
       return;
     }
     Prompt.active.hide();
+    Prompt.dots.show();
     Prompt.history.push(cmd);
     Prompt.history_pos = Prompt.history.length;
     Prompt.hist(Prompt.count + ">", cmd);
@@ -68,6 +70,7 @@ Prompt = {
     MathJax.Hub.Queue(["Typeset", MathJax.Hub, block[0]]);
     Prompt.count += 1;
     Prompt.active.show();
+    Prompt.dots.hide();
     Prompt.active.find(".prompt-p").text(Prompt.count + ">");
     Prompt.active.find(".prompt-c").val("").focus();
     return $('html, body').scrollTop($(document).height());
@@ -89,12 +92,19 @@ Prompt = {
       }
     }
     return false;
+  },
+  ndots: 0,
+  tick: function() {
+    Prompt.ndots = (Prompt.ndots + 1) % 5;
+    return Prompt.dots.text(Array(Prompt.ndots + 2).join("."));
   }
 };
 
 $(function() {
   Prompt.active = $("#prompt").append(Prompt.make("", ""));
   Prompt.active.find(".prompt-p").text(Prompt.count + ">");
+  Prompt.dots = $("#dots");
+  setInterval(Prompt.tick, 100);
   $("#toggl1").click(function(e) {
     $("#toggl1").toggleClass("down");
     Prompt.toggles[0] = !Prompt.toggles[0];

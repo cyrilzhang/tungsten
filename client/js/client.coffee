@@ -11,6 +11,7 @@ Prompt = {
     results: []
     history_pos: 0
     toggles: [true, false, false]
+    dots: null
     make: (prefix, content) ->
         p = $('<div class="prompt-p"/>').text(prefix)
         c = $('<input type="text" class="prompt-c"/>').val(content)
@@ -26,6 +27,7 @@ Prompt = {
         cmd = Prompt.active.find(".prompt-c").val()
         if cmd == "" then return
         Prompt.active.hide()
+        Prompt.dots.show()
         Prompt.history.push(cmd)
         Prompt.history_pos = Prompt.history.length
         Prompt.hist(Prompt.count + ">", cmd)
@@ -48,9 +50,10 @@ Prompt = {
 
         $('#container').append(block, line1, line2)
         MathJax.Hub.Queue(["Typeset", MathJax.Hub, block[0]]);
-        
+
         Prompt.count += 1
         Prompt.active.show()
+        Prompt.dots.hide()
         Prompt.active.find(".prompt-p").text(Prompt.count + ">")
         Prompt.active.find(".prompt-c").val("").focus()
         $('html, body').scrollTop($(document).height())
@@ -67,11 +70,18 @@ Prompt = {
             else
                 Prompt.active.find(".prompt-c").val(Prompt.history[Prompt.history_pos])
         false
+
+    ndots: 0
+    tick: ->
+        Prompt.ndots = (Prompt.ndots+1) % 5
+        Prompt.dots.text(Array(Prompt.ndots+2).join("."))
 }
 
 $ ->
     Prompt.active = $("#prompt").append( Prompt.make("", "") )
     Prompt.active.find(".prompt-p").text(Prompt.count + ">")
+    Prompt.dots = $("#dots")
+    setInterval(Prompt.tick, 100)
 
     $("#toggl1").click( (e) ->
         $("#toggl1").toggleClass("down")
