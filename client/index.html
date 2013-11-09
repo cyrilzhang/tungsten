@@ -8,6 +8,7 @@
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" ></script>
   <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js" ></script>
   <script type="text/javascript" src="js/client.js"></script>
+  <script type="text/javascript" src="js/mathjax.js"></script>
 
   <script type="text/x-mathjax-config">
      MathJax.Hub.Config({
@@ -16,7 +17,12 @@
      });
   </script>
   <script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
+  <script type="text/javascript">
+    function update() {
+      var math = document.getElementById("container");
+      MathJax.Hub.Queue(["Typeset", MathJax.Hub, math]);
+    }
+   </script>
   <meta charset="UTF-8">
   <title>Tungsten</title>
   <style>
@@ -82,6 +88,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f1e767', end
 
     }
   </style>
+  
  </head>
  <body spellcheck="false">
   <div id="header">
@@ -89,7 +96,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f1e767', end
   </div>
   <div id="wrapper">
     <p> Example: $x \neq 0$ </p>
-    <div id="container"></div>
+    <div id="container" onclick="update()"></div>
     <div id="prompt"></div>
   </div>
  </body>
