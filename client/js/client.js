@@ -5,7 +5,7 @@ Controller = {
   url: 'http://172.26.11.226:8000/',
   get: function(msg, callback) {
     return $.post(Controller.url, {
-      data: msg
+      data: translate(msg)
     }, callback);
   }
 };
@@ -14,7 +14,9 @@ Prompt = {
   count: 1,
   active: null,
   history: [],
+  results: [],
   history_pos: 0,
+  toggles: [true, false, false],
   make: function(prefix, content) {
     var block, c, p;
     p = $('<div class="prompt-p"/>').text(prefix);
@@ -45,10 +47,22 @@ Prompt = {
   },
   next: function(out) {
     var block, line1, line2, segments;
-    segments = out.split('\n');
-    block = $('<div class="output"/>').text("$" + segments[0] + "$");
+    segments = out.split('%%%');
+    segments[0].replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+    segments[1].replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+    block = $('<div class="output texrender"/>').text("$" + segments[0] + "$");
     line1 = $('<div class="output texcode"/>').text(segments[0]);
     line2 = $('<div class="output mathcode"/>').text(segments[1]);
+    if (!Prompt.toggles[0]) {
+      block.addClass("hide");
+    }
+    if (!Prompt.toggles[1]) {
+      line1.addClass("hide");
+    }
+    if (!Prompt.toggles[2]) {
+      line2.addClass("hide");
+    }
+    Prompt.results.push(segments[1]);
     $('#container').append(block, line1, line2);
     update();
     Prompt.count += 1;
@@ -80,6 +94,21 @@ Prompt = {
 $(function() {
   Prompt.active = $("#prompt").append(Prompt.make("", ""));
   Prompt.active.find(".prompt-p").text(Prompt.count + ">");
+  $("#toggl1").click(function(e) {
+    $(e.target).toggleClass("down");
+    Prompt.toggles[0] = !Prompt.toggles[0];
+    return $(".texrender").toggleClass("hide");
+  });
+  $("#toggl2").click(function(e) {
+    $(e.target).toggleClass("down");
+    Prompt.toggles[1] = !Prompt.toggles[1];
+    return $(".texcode").toggleClass("hide");
+  });
+  $("#toggl3").click(function(e) {
+    $(e.target).toggleClass("down");
+    Prompt.toggles[2] = !Prompt.toggles[2];
+    return $(".mathcode").toggleClass("hide");
+  });
   $(window).keydown(function(e) {
     switch (e.which) {
       case 13:

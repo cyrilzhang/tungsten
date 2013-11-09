@@ -43,8 +43,10 @@ app.post('/', function(request, response){
 			response.send(stdout + "\n");
 		});
 
-    child.stdin.write("Data = " + request.body.data + "\n" +
-    				  "TeXForm[Data]\nInputForm[Data]\n");
+	var delim = "%%%";
+    child.stdin.write("Data = " + request.body.data + delim +
+    				  "TeXForm[Data]" + delim +
+    				  "InputForm[Data]");
     child.stdin.end();
 
 });

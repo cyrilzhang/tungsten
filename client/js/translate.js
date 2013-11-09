@@ -3,7 +3,7 @@ function translate(raw) {
   var at_index = raw.search(" at ")
   if (at_index >= 0) {
     var str = raw.substr(at_index + 3, raw.length - at_index - 3)
-    return raw.substr(0, at_index) + " /. " + "{" + str.replace(/=/g, "->") + "}";
+    return translate(raw.substr(0, at_index) + " /. " + "{" + str.replace(/=/g, "->") + "}");
   }
 
   // then look for ``
