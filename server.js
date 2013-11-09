@@ -3,10 +3,13 @@ var http = require('http');
 
 // Configure our HTTP server to respond with Hello World to all requests.
 var server = http.createServer(function (request, response) {
+    var body = "";
+    request.on('data', function (chunk) { body += chunk; } );
+    request.on('end', function() { console.log(body); } );
     response.writeHead(200,
         {"Content-Type": "text/plain",
          "Access-Control-Allow-Origin": "*"});
-      response.end("Hello World\n");
+    response.end("Hello World\n");
 });
 
 // Listen on port 8000, IP defaults to 127.0.0.1

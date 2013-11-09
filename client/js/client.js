@@ -4,7 +4,9 @@ var Controller, Prompt;
 Controller = {
   url: 'http://172.26.11.226:8000/',
   get: function(msg, callback) {
-    return $.post(Controller.url, msg, callback);
+    return $.post(Controller.url, {
+      data: msg
+    }, callback);
   }
 };
 
