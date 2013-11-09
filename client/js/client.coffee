@@ -31,6 +31,7 @@ Prompt = {
     next: (out) ->
         block = $('<div class="output"/>').text(out)
         $('#container').append(block)
+        update()
         Prompt.count += 1
         Prompt.active.show()
         Prompt.active.find(".prompt-p").text(Prompt.count + ">")
