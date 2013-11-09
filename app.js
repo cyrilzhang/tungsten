@@ -38,7 +38,7 @@ app.post('/', function(request, response){
 
 	var exec = require('child_process').exec, child;
 
-	child = exec('/Applications/Mathematica.app/Contents/MacOS -noprompt',
+	child = exec('/Applications/Mathematica.app/Contents/MacOS/MathKernel -noprompt',
 		function (error, stdout, stderr) {
 			response.send(stdout + "\n");
 		});
