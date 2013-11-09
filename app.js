@@ -36,7 +36,7 @@ app.post('/', function(request, response){
 	var exec = require('child_process').exec,
 	child;
 
-	child = exec('echo ' + request.body.data,
+	child = exec('sed s/a/e/g ',
 		function (error, stdout, stderr) {
 			console.log('stdout: ' + stdout);
 			console.log('stderr: ' + stderr);
@@ -44,6 +44,8 @@ app.post('/', function(request, response){
 				console.log('exec error: ' + error);
 			}
 		});
+    proc.stdin.write(request.body.data + "\n");
+    proc.stdin.end();
 
 
 	response.set({
