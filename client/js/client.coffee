@@ -1,7 +1,7 @@
 Controller = {
+    url: 'http://172.26.11.226:8000/'
     get: (msg, callback) ->
-        out = $('<div class="output"/>').text(msg.toUpperCase())
-        setTimeout( (() => callback(out)) , 100)
+        $.post( Controller.url, msg, callback )
 }
 
 Prompt = {
@@ -29,7 +29,8 @@ Prompt = {
         Prompt.hist(Prompt.count + ">", cmd)
         out = Controller.get(cmd, Prompt.next)
     next: (out) ->
-        $('#container').append(out)
+        block = $('<div class="output"/>').text(out)
+        $('#container').append(block)
         Prompt.count += 1
         Prompt.active.show()
         Prompt.active.find(".prompt-p").text(Prompt.count + ">")

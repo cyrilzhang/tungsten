@@ -2,13 +2,9 @@
 var Controller, Prompt;
 
 Controller = {
+  url: 'http://172.26.11.226:8000/',
   get: function(msg, callback) {
-    var out,
-      _this = this;
-    out = $('<div class="output"/>').text(msg.toUpperCase());
-    return setTimeout((function() {
-      return callback(out);
-    }), 100);
+    return $.post(Controller.url, msg, callback);
   }
 };
 
@@ -46,7 +42,9 @@ Prompt = {
     return out = Controller.get(cmd, Prompt.next);
   },
   next: function(out) {
-    $('#container').append(out);
+    var block;
+    block = $('<div class="output"/>').text(out);
+    $('#container').append(block);
     Prompt.count += 1;
     Prompt.active.show();
     Prompt.active.find(".prompt-p").text(Prompt.count + ">");
