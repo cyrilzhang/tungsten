@@ -1,8 +1,8 @@
 function translate(raw) {
   // first look for the at
-  var at_index = raw.search("at")
+  var at_index = raw.search(" at ")
   if (at_index >= 0) {
-    return raw.substr(0, at_index) + "/. " + "{" + raw.substr(at_index + 2, raw.length - at_index - 2) + "}";
+    return raw.substr(0, at_index) + " /. " + "{" + raw.substr(at_index + 3, raw.length - at_index - 3) + "}";
   }
 
   // then look for ``
