@@ -1,14 +1,16 @@
 Controller = {
     url: 'http://172.26.11.226:8000/'
     get: (msg, callback) ->
-        $.post( Controller.url, {data: msg}, callback )
+        $.post( Controller.url, {data: translate(msg)}, callback )
 }
 
 Prompt = {
     count: 1
     active: null
     history: []
+    results: []
     history_pos: 0
+    toggles: [true, false, false]
     make: (prefix, content) ->
         p = $('<div class="prompt-p"/>').text(prefix)
         c = $('<input type="text" class="prompt-c"/>').val(content)
@@ -29,10 +31,19 @@ Prompt = {
         Prompt.hist(Prompt.count + ">", cmd)
         out = Controller.get(cmd, Prompt.next)
     next: (out) ->
-        segments = out.split('\n')
-        block = $('<div class="output"/>').text("$" + segments[0] + "$")
+        segments = out.split('%%%')
+        segments[0].replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+        segments[1].replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+        block = $('<div class="output texrender"/>').text("$" + segments[0] + "$")
         line1 = $('<div class="output texcode"/>').text(segments[0])
         line2 = $('<div class="output mathcode"/>').text(segments[1])
+
+        block.addClass("hide") unless Prompt.toggles[0]
+        line1.addClass("hide") unless Prompt.toggles[1]
+        line2.addClass("hide") unless Prompt.toggles[2]
+
+        Prompt.results.push(segments[1])
+
         $('#container').append(block, line1, line2)
         update()
         Prompt.count += 1
@@ -58,6 +69,19 @@ Prompt = {
 $ ->
     Prompt.active = $("#prompt").append( Prompt.make("", "") )
     Prompt.active.find(".prompt-p").text(Prompt.count + ">")
+
+    $("#toggl1").click( (e) ->
+        $(e.target).toggleClass("down")
+        Prompt.toggles[0] = not Prompt.toggles[0]
+        $(".texrender").toggleClass("hide") )
+    $("#toggl2").click( (e) ->
+        $(e.target).toggleClass("down")
+        Prompt.toggles[1] = not Prompt.toggles[1]
+        $(".texcode").toggleClass("hide") )
+    $("#toggl3").click( (e) ->
+        $(e.target).toggleClass("down")
+        Prompt.toggles[2] = not Prompt.toggles[2]
+        $(".mathcode").toggleClass("hide") )
     $(window).keydown((e) ->
         switch e.which
             when 13 then Prompt.submit()
