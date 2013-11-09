@@ -14,7 +14,7 @@ function translate(raw) {
   // look for line variables
   var hits = raw.match(/<([1-9]*[0-9])>/g);
   if (hits) {
-    var replaced = raw.replace(/</g, "Var").replace(/>/g, "");
+    var replaced = raw.replace(/</g, "Var").replace(/->/g, "-<").replace(/>/g, "").replace(/-</g, "->");
     for( var i = 0; i < hits.length; i++)
     { hits[i] = hits[i].match("<([1-9]*[0-9])>")[1]; }
     hits = hits.unique();
