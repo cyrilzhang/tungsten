@@ -31,29 +31,20 @@ if ('development' == app.get('env')) {
 app.use(express.bodyParser());
 
 app.post('/', function(request, response){
-
-
-	var exec = require('child_process').exec,
-	child;
-
-	child = exec('sed s/a/e/g ',
-		function (error, stdout, stderr) {
-			console.log('stdout: ' + stdout);
-			console.log('stderr: ' + stderr);
-			if (error !== null) {
-				console.log('exec error: ' + error);
-			}
-		});
-    child.stdin.write(request.body.data + "\n");
-    child.stdin.end();
-
-
 	response.set({
 		'Content-Type': 'text/plain',
 		'Access-Control-Allow-Origin': '*'	
-	})
+	});
 
-	response.send("Hello World\n");
+	var exec = require('child_process').exec, child;
+
+	child = exec('sed s/a/e/g ',
+		function (error, stdout, stderr) {
+			response.send(stdout + "\n");
+		});
+	
+    child.stdin.write(request.body.data + "\n");
+    child.stdin.end();
 
 });
 
