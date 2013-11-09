@@ -38,12 +38,13 @@ app.post('/', function(request, response){
 
 	var exec = require('child_process').exec, child;
 
-	child = exec('/Applications/Mathematica.app/Contents/MacOS/MathKernel -noprompt',
+	child = exec('/Applications/Mathematica.app/Contents/MacOS/MathKernel -noprompt | sed 1d',
 		function (error, stdout, stderr) {
 			response.send(stdout + "\n");
 		});
 
-    child.stdin.write("TeXForm[" + request.body.data + "]\n");
+    child.stdin.write("Data = " + request.body.data + "\n" +
+    				  "TeXForm[Data]\nInputForm[Data]\n");
     child.stdin.end();
 
 });
