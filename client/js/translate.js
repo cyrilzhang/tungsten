@@ -21,9 +21,10 @@ function translate(raw) {
     var to_ret = replaced;
     to_ret += " /. {";
     for (var i = 0; i < hits.length; i++) {
+      to_ret += "Var";
       to_ret += hits[i];
       to_ret += "->";
-      to_ret += Prompt.results[hits[i-1]];
+      to_ret += Prompt.results[hits[i]-1];
       if (i != hits.length - 1) {
         to_ret += ", ";
       }
