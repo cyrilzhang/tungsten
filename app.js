@@ -44,8 +44,8 @@ app.post('/', function(request, response){
 				console.log('exec error: ' + error);
 			}
 		});
-    proc.stdin.write(request.body.data + "\n");
-    proc.stdin.end();
+    child.stdin.write(request.body.data + "\n");
+    child.stdin.end();
 
 
 	response.set({
