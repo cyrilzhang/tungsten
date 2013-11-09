@@ -1,5 +1,5 @@
 Controller = {
-    url: 'http://172.26.11.226:8000/'
+    url: 'http://127.0.0.1:8000/'
     get: (msg, callback) ->
         $.post( Controller.url, {data: translate(msg)}, callback )
 }
@@ -27,6 +27,7 @@ Prompt = {
         cmd = Prompt.active.find(".prompt-c").val()
         if cmd == "" then return
         Prompt.active.hide()
+        Prompt.ndots = 0
         Prompt.dots.show()
         Prompt.history.push(cmd)
         Prompt.history_pos = Prompt.history.length
@@ -37,7 +38,6 @@ Prompt = {
         segments[0].replace(/^\s\s*/, '').replace(/\s\s*$/, '');
         segments[1].replace(/^\s\s*/, '').replace(/\s\s*$/, '');
 
-        console.log(segments)
         block = $('<div class="output texrender"/>').text("$" + segments[0] + "$")
         line1 = $('<div class="output texcode"/>').text(segments[0])
         line2 = $('<div class="output mathcode"/>').text(segments[1])
@@ -101,6 +101,5 @@ $ ->
             when 38 then Prompt.up()
             when 40 then Prompt.down()
             when 17, 91 then false
-            else Prompt.active.find(".prompt-c").focus()
     ).click( (e) -> Prompt.active.find(".prompt-c").focus() if e.target == this )
     Prompt.active.find(".prompt-c").focus()

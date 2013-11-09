@@ -2,7 +2,7 @@
 var Controller, Prompt;
 
 Controller = {
-  url: 'http://172.26.11.226:8000/',
+  url: 'http://127.0.0.1:8000/',
   get: function(msg, callback) {
     return $.post(Controller.url, {
       data: translate(msg)
@@ -41,6 +41,7 @@ Prompt = {
       return;
     }
     Prompt.active.hide();
+    Prompt.ndots = 0;
     Prompt.dots.show();
     Prompt.history.push(cmd);
     Prompt.history_pos = Prompt.history.length;
@@ -52,7 +53,6 @@ Prompt = {
     segments = out.split('%%%');
     segments[0].replace(/^\s\s*/, '').replace(/\s\s*$/, '');
     segments[1].replace(/^\s\s*/, '').replace(/\s\s*$/, '');
-    console.log(segments);
     block = $('<div class="output texrender"/>').text("$" + segments[0] + "$");
     line1 = $('<div class="output texcode"/>').text(segments[0]);
     line2 = $('<div class="output mathcode"/>').text(segments[1]);
@@ -131,8 +131,6 @@ $(function() {
       case 17:
       case 91:
         return false;
-      default:
-        return Prompt.active.find(".prompt-c").focus();
     }
   }).click(function(e) {
     if (e.target === this) {
