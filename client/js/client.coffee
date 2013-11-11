@@ -83,6 +83,8 @@ $ ->
     Prompt.dots = $("#dots")
     setInterval(Prompt.tick, 100)
 
+    $("#wa").click( -> location.reload() )
+
     $("#toggl1").click( (e) ->
         $("#toggl1").toggleClass("down")
         Prompt.toggles[0] = not Prompt.toggles[0]

@@ -105,6 +105,9 @@ $(function() {
   Prompt.active.find(".prompt-p").text(Prompt.count + ">");
   Prompt.dots = $("#dots");
   setInterval(Prompt.tick, 100);
+  $("#wa").click(function() {
+    return location.reload();
+  });
   $("#toggl1").click(function(e) {
     $("#toggl1").toggleClass("down");
     Prompt.toggles[0] = !Prompt.toggles[0];
