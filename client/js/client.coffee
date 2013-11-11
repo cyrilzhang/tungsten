@@ -1,3 +1,6 @@
+trimSpaces = (str) ->
+    return str.replace(/^\s\s*/, '').replace(/\s\s*$/, '')
+
 Parser = {
     # if structure not recognized, return null
     # if syntax error, return {error: "msg"}
@@ -13,41 +16,80 @@ Parser = {
         bracket_level = [0, 0, 0]
         literal_level = [0, 0, 0]
         prone = []
-
-        for i in [0..str.length]
+        for i in [0..str.length-1]
             c = str.charAt(i)
             lit = Parser.literal_markers.indexOf(c)
             open = Parser.open_brackets.indexOf(c)
             close = Parser.close_brackets.indexOf(c)
             if lit != -1
                 literal_level[lit] = 1 - literal_level[lit]
-            else if literal_level == [0, 0, 0]
+            else if _.without(literal_level,0).length == 0
                 if open != -1
                     bracket_level[open] += 1
                 else if close != -1
                     bracket_level[close] -= 1
-            console.log literal_level, bracket_level
-            if literal_level == [0, 0, 0] and bracket_level == [0, 0, 0]
-                prone.push(i)
+                else if _.without(literal_level,0).length == 0 and _.without(bracket_level,0).length == 0
+                    prone.push(i)
         return prone
-    parseFreeforms: (str) ->
-        return {error: "freeform"}
-    parseLines: (str) ->
-        return {error: "linesub"}
     parseAt: (str) ->
         pos = str.search(" at ")
         if pos == -1
             return null
-        expr = raw.substr(0, at_index)
-        raw_subs = raw.substr(at_index + 3, raw.length - at_index - 3)
+        expr = str.substr(0, pos)
+        raw_subs = str.substr(pos+4)
+        prone = Parser.findProneIndices(raw_subs)
+        commas = [-1]
+        for x, i in prone
+            commas.push(i) if raw_subs.charAt(x) == ','
+        commas.push(str.length)
 
-        return {type: "at", expr: expr, subs: subs}
+        subs = []
+        for i in [0..commas.length-2]
+            sub = trimSpaces(raw_subs.substr(commas[i]+1, commas[i+1] - commas[i] - 1))
+            equals = []
+            for i in [0..sub.length-1]
+                equals.push(i) if raw_subs.charAt(i) == '=' and raw_subs.charAt(i+1) != '=' and raw_subs.charAt(i-1) != '='
+            if equals.length == 0
+                return {error: "substitution with no '=' tokens"}
+            else if equals.length >= 2
+                return {error: "substitution with too many '=' tokens"}
+            else
+                this_var = sub.substr(0, equals[0])
+                this_sub = sub.substr(equals[0]+1)
+                subs.push({ var:this_var, sub:{type:"expr", expr:this_sub} })
+        if subs.length == 0
+            return {error: "no substitutions"}
+
+        return {type: "at", expr: {type: "expr", expr: expr}, subs: subs}
     parseLet: (str) ->
-        return {error: "let"}
+        return null
+    parseExpr: (str) ->
+        return {type: "expr", expr: str}
     parse: (str) ->
-        return {error: "full"}
-    toMathematica: (tree) ->
-        return "x^2"
+        p_at = Parser.parseAt(str)
+        p_let = Parser.parseLet(str)
+
+        if p_let != null
+            return null
+        if p_at != null
+            return p_at
+        
+        return Parser.parseExpr(str)
+}
+
+Compiler = {
+    compileExpr: (tree) ->
+        return tree.expr
+    Compiler: (tree) ->
+        if tree.type == "at"
+            ret = [" ( ", Compiler.compileExpr(tree.expr), " /. " , " { "]
+            for sub, i in tree.subs
+                ret.push(" , ") unless i == 0
+                ret.push(sub.var, " -> ", Compiler.compileExpr(sub.sub))
+            ret.push(" } ) ")
+            return ret.join('')
+        else if tree.type == "expr"
+            return Compiler.compileExpr(tree)
 }
 
 Controller = {
@@ -57,7 +99,7 @@ Controller = {
         if tree.error?
             syntaxerr_callback(tree.error)
         else
-            $.post( Controller.url, {data: Parser.toMathematica(tree)}, callback )
+            $.post( Controller.url, {data: Compiler.Compiler(tree)}, callback )
                 .error(ajaxerr_callback)
 }
 
@@ -93,8 +135,8 @@ Prompt = {
         out = Controller.get(cmd, Prompt.success, Prompt.ajaxError, Prompt.syntaxError)
     success: (out) ->
         segments = out.split('%%%')
-        segments[0].replace(/^\s\s*/, '').replace(/\s\s*$/, '');
-        segments[1].replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+        segments[0] = trimSpaces(segments[0])
+        segments[1] = trimSpaces(segments[1])
 
         block = $('<div class="output texrender"/>').text("$" + segments[0] + "$")
         line1 = $('<div class="output texcode"/>').text(segments[0])
