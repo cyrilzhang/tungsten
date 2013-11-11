@@ -57,13 +57,13 @@ Prompt = {
     line1 = $('<div class="output texcode"/>').text(segments[0]);
     line2 = $('<div class="output mathcode"/>').text(segments[1]);
     if (!Prompt.toggles[0]) {
-      block.addClass("hide");
+      block.hide();
     }
     if (!Prompt.toggles[1]) {
-      line1.addClass("hide");
+      line1.hide();
     }
     if (!Prompt.toggles[2]) {
-      line2.addClass("hide");
+      line2.hide();
     }
     Prompt.results.push(segments[1]);
     $('#container').append(block, line1, line2);
@@ -122,17 +122,29 @@ $(function() {
   $("#toggl1").click(function(e) {
     $("#toggl1").toggleClass("down");
     Prompt.toggles[0] = !Prompt.toggles[0];
-    return $(".texrender").toggleClass("hide");
+    if (Prompt.toggles[0]) {
+      return $(".texrender").show();
+    } else {
+      return $(".texrender").hide();
+    }
   });
   $("#toggl2").click(function(e) {
     $("#toggl2").toggleClass("down");
     Prompt.toggles[1] = !Prompt.toggles[1];
-    return $(".texcode").toggleClass("hide");
+    if (Prompt.toggles[0]) {
+      return $(".texcode").show();
+    } else {
+      return $(".texcode").hide();
+    }
   });
   $("#toggl3").click(function(e) {
     $("#toggl3").toggleClass("down");
     Prompt.toggles[2] = !Prompt.toggles[2];
-    return $(".mathcode").toggleClass("hide");
+    if (Prompt.toggles[0]) {
+      return $(".mathcode").show();
+    } else {
+      return $(".mathcode").hide();
+    }
   });
   $(window).keydown(function(e) {
     switch (e.which) {

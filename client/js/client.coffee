@@ -44,9 +44,9 @@ Prompt = {
         line1 = $('<div class="output texcode"/>').text(segments[0])
         line2 = $('<div class="output mathcode"/>').text(segments[1])
 
-        block.addClass("hide") unless Prompt.toggles[0]
-        line1.addClass("hide") unless Prompt.toggles[1]
-        line2.addClass("hide") unless Prompt.toggles[2]
+        block.hide() unless Prompt.toggles[0]
+        line1.hide() unless Prompt.toggles[1]
+        line2.hide() unless Prompt.toggles[2]
 
         Prompt.results.push(segments[1])
 
@@ -97,15 +97,15 @@ $ ->
     $("#toggl1").click( (e) ->
         $("#toggl1").toggleClass("down")
         Prompt.toggles[0] = not Prompt.toggles[0]
-        $(".texrender").toggleClass("hide") )
+        if Prompt.toggles[0] then $(".texrender").show() else $(".texrender").hide() )
     $("#toggl2").click( (e) ->
         $("#toggl2").toggleClass("down")
         Prompt.toggles[1] = not Prompt.toggles[1]
-        $(".texcode").toggleClass("hide") )
+        if Prompt.toggles[0] then $(".texcode").show() else $(".texcode").hide() )
     $("#toggl3").click( (e) ->
         $("#toggl3").toggleClass("down")
         Prompt.toggles[2] = not Prompt.toggles[2]
-        $(".mathcode").toggleClass("hide") )
+        if Prompt.toggles[0] then $(".mathcode").show() else $(".mathcode").hide() )
     $(window).keydown((e) ->
         switch e.which
             when 13 then Prompt.submit()
