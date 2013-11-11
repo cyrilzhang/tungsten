@@ -6,19 +6,22 @@ trimSpaces = function(str) {
 };
 
 Parser = {
-  open_brackets: "({[",
-  close_brackets: ")}]",
-  literal_markers: "\"'`",
-  findProneIndices: function(str) {
-    var bracket_level, c, close, i, lit, literal_level, open, prone, _i, _ref;
-    bracket_level = [0, 0, 0];
-    literal_level = [0, 0, 0];
+  findProneIndices: function(str, open_brackets, close_brackets, literal_markers) {
+    var bracket_level, c, close, i, lit, literal_level, open, prone, _i, _j, _k, _ref, _ref1, _ref2;
+    bracket_level = [];
+    literal_level = [];
+    for (i = _i = 1, _ref = open_brackets.length; 1 <= _ref ? _i <= _ref : _i >= _ref; i = 1 <= _ref ? ++_i : --_i) {
+      bracket_level.push(0);
+    }
+    for (i = _j = 1, _ref1 = literal_markers.length; 1 <= _ref1 ? _j <= _ref1 : _j >= _ref1; i = 1 <= _ref1 ? ++_j : --_j) {
+      literal_level.push(0);
+    }
     prone = [];
-    for (i = _i = 0, _ref = str.length - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
+    for (i = _k = 0, _ref2 = str.length - 1; 0 <= _ref2 ? _k <= _ref2 : _k >= _ref2; i = 0 <= _ref2 ? ++_k : --_k) {
       c = str.charAt(i);
-      lit = Parser.literal_markers.indexOf(c);
-      open = Parser.open_brackets.indexOf(c);
-      close = Parser.close_brackets.indexOf(c);
+      lit = literal_markers.indexOf(c);
+      open = open_brackets.indexOf(c);
+      close = close_brackets.indexOf(c);
       if (lit !== -1) {
         literal_level[lit] = 1 - literal_level[lit];
       } else if (_.without(literal_level, 0).length === 0) {
@@ -41,7 +44,7 @@ Parser = {
     }
     expr = str.substr(0, pos);
     raw_subs = str.substr(pos + 4);
-    prone = Parser.findProneIndices(raw_subs);
+    prone = Parser.findProneIndices(raw_subs, "([{", ")]}", "'\"`");
     commas = [-1];
     for (i = _i = 0, _len = prone.length; _i < _len; i = ++_i) {
       x = prone[i];
@@ -70,12 +73,19 @@ Parser = {
       } else {
         this_var = sub.substr(0, equals[0]);
         this_sub = sub.substr(equals[0] + 1);
+        if (this_var === "") {
+          return {
+            error: "substitution with no variable"
+          };
+        }
+        if (this_sub === "") {
+          return {
+            error: "substitution with no expression"
+          };
+        }
         subs.push({
           "var": this_var,
-          sub: {
-            type: "expr",
-            expr: this_sub
-          }
+          sub: Parser.parseExpr(this_sub)
         });
       }
     }
@@ -86,17 +96,37 @@ Parser = {
     }
     return {
       type: "at",
-      expr: {
-        type: "expr",
-        expr: expr
-      },
+      body: Parser.parseExpr(expr),
       subs: subs
     };
   },
   parseLet: function(str) {
     return null;
   },
+  resolveNat: function(str) {
+    var chunk, i, in_nat, pos, prone, ret, x, _i, _len;
+    prone = Parser.findProneIndices(str, "", "", "'\"");
+    prone.push(str.length);
+    pos = -1;
+    in_nat = 0;
+    ret = [];
+    for (i = _i = 0, _len = prone.length; _i < _len; i = ++_i) {
+      x = prone[i];
+      if (x === str.length || str.charAt(x, prone) === '`') {
+        chunk = str.substr(pos + 1, x - pos - 1);
+        if (in_nat) {
+          ret.push(' WolframAlpha[ "', chunk, '", "MathematicaResult" ] ');
+        } else {
+          ret.push(' ', chunk, ' ');
+        }
+        pos = x;
+        in_nat = 1 - in_nat;
+      }
+    }
+    return ret.join('');
+  },
   parseExpr: function(str) {
+    str = Parser.resolveNat(str);
     return {
       type: "expr",
       expr: str
@@ -120,10 +150,10 @@ Compiler = {
   compileExpr: function(tree) {
     return tree.expr;
   },
-  Compiler: function(tree) {
+  compile: function(tree) {
     var i, ret, sub, _i, _len, _ref;
     if (tree.type === "at") {
-      ret = [" ( ", Compiler.compileExpr(tree.expr), " /. ", " { "];
+      ret = [" ( ", Compiler.compileExpr(tree.body), " /. ", " { "];
       _ref = tree.subs;
       for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
         sub = _ref[i];
@@ -149,7 +179,7 @@ Controller = {
       return syntaxerr_callback(tree.error);
     } else {
       return $.post(Controller.url, {
-        data: Compiler.Compiler(tree)
+        data: Compiler.compile(tree)
       }, callback).error(ajaxerr_callback);
     }
   }
