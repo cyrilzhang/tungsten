@@ -16,6 +16,7 @@ Prompt = {
     make: (prefix, content) ->
         p = $('<div class="prompt-p"/>').text(prefix)
         c = $('<input type="text" class="prompt-c"/>').val(content)
+        # c = $('<div contenteditable="true" class="prompt-c"/>').val(content)
         return block = $('<div class="prompt-b"/>').append(p, c)
     hist: (prefix, content) ->
         block = Prompt.make(prefix, content)
