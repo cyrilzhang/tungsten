@@ -131,7 +131,7 @@ $(function() {
   $("#toggl2").click(function(e) {
     $("#toggl2").toggleClass("down");
     Prompt.toggles[1] = !Prompt.toggles[1];
-    if (Prompt.toggles[0]) {
+    if (Prompt.toggles[1]) {
       return $(".texcode").show();
     } else {
       return $(".texcode").hide();
@@ -140,7 +140,7 @@ $(function() {
   $("#toggl3").click(function(e) {
     $("#toggl3").toggleClass("down");
     Prompt.toggles[2] = !Prompt.toggles[2];
-    if (Prompt.toggles[0]) {
+    if (Prompt.toggles[2]) {
       return $(".mathcode").show();
     } else {
       return $(".mathcode").hide();

@@ -101,11 +101,11 @@ $ ->
     $("#toggl2").click( (e) ->
         $("#toggl2").toggleClass("down")
         Prompt.toggles[1] = not Prompt.toggles[1]
-        if Prompt.toggles[0] then $(".texcode").show() else $(".texcode").hide() )
+        if Prompt.toggles[1] then $(".texcode").show() else $(".texcode").hide() )
     $("#toggl3").click( (e) ->
         $("#toggl3").toggleClass("down")
         Prompt.toggles[2] = not Prompt.toggles[2]
-        if Prompt.toggles[0] then $(".mathcode").show() else $(".mathcode").hide() )
+        if Prompt.toggles[2] then $(".mathcode").show() else $(".mathcode").hide() )
     $(window).keydown((e) ->
         switch e.which
             when 13 then Prompt.submit()
