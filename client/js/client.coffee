@@ -65,7 +65,6 @@ Prompt = {
     error: (out) ->
         errline = $('<div class="output error"/>').text("Connection error")
         $('#container').append(errline)
-        console.log(out)
         Prompt.next()
     up: ->
         if Prompt.history_pos > 0

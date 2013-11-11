@@ -84,7 +84,6 @@ Prompt = {
     var errline;
     errline = $('<div class="output error"/>').text("Connection error");
     $('#container').append(errline);
-    console.log(out);
     return Prompt.next();
   },
   up: function() {
