@@ -38,7 +38,7 @@ app.post('/', function(request, response){
 
 	var exec = require('child_process').exec, child;
 
-	child = exec('/Applications/Mathematica.app/Contents/MacOS/MathKernel -noprompt | sed 1d | sed s/InputForm//g | tr -d "[]"',
+	child = exec('/Applications/Mathematica.app/Contents/MacOS/MathKernel -noprompt | sed 1d | sed s/InputForm//g',
 		function (error, stdout, stderr) {
 			response.send(stdout + "\n");
 		});
@@ -46,7 +46,7 @@ app.post('/', function(request, response){
     child.stdin.write("Data = " + request.body.data + "\n" +
     				  "TeXForm[Data]\n" +
     				  "Print[OutputForm[\"%%%\"]]\n" +
-    				  "InputForm[Data]");
+    				  "OutputForm[InputForm[Data]]");
     child.stdin.end();
 
 });

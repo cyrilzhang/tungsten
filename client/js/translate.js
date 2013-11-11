@@ -10,7 +10,7 @@ Array.prototype.unique = function() {
   return a;
 };
 
-function translate(raw) {
+function line(raw) {
   // look for line variables
   var hits = raw.match(/<([1-9]*[0-9])>/g);
   if (hits) {
@@ -32,12 +32,15 @@ function translate(raw) {
     to_ret += "}";
     return to_ret;
   }
+  return raw;
+}
 
+function translate(raw) {
   // first look for the at
   var at_index = raw.search(" at ")
   if (at_index >= 0) {
     var str = raw.substr(at_index + 3, raw.length - at_index - 3)
-    return translate(raw.substr(0, at_index) + " /. " + "{" + str.replace(/=/g, "->") + "}");
+    return translate(line(raw.substr(0, at_index)) + " /. " + "{" + str.replace(/=/g, "->") + "}");
   }
 
   // then look for ``
