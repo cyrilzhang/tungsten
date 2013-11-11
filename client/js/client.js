@@ -133,7 +133,7 @@ $(function() {
         return false;
     }
   }).click(function(e) {
-    if (e.target === this) {
+    if (e.target.id === "parent-target") {
       return Prompt.active.find(".prompt-c").focus();
     }
   });
