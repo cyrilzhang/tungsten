@@ -1,8 +1,64 @@
+Parser = {
+    # if structure not recognized, return null
+    # if syntax error, return {error: "msg"}
+    # otherwise, return an Object
+
+    open_brackets: "({["
+    close_brackets: ")}]"
+    literal_markers: "\"'`"
+
+    findProneIndices: (str) ->
+        # array of indices at lowest bracket level
+        # this is shitty
+        bracket_level = [0, 0, 0]
+        literal_level = [0, 0, 0]
+        prone = []
+
+        for i in [0..str.length]
+            c = str.charAt(i)
+            lit = Parser.literal_markers.indexOf(c)
+            open = Parser.open_brackets.indexOf(c)
+            close = Parser.close_brackets.indexOf(c)
+            if lit != -1
+                literal_level[lit] = 1 - literal_level[lit]
+            else if literal_level == [0, 0, 0]
+                if open != -1
+                    bracket_level[open] += 1
+                else if close != -1
+                    bracket_level[close] -= 1
+            console.log literal_level, bracket_level
+            if literal_level == [0, 0, 0] and bracket_level == [0, 0, 0]
+                prone.push(i)
+        return prone
+    parseFreeforms: (str) ->
+        return {error: "freeform"}
+    parseLines: (str) ->
+        return {error: "linesub"}
+    parseAt: (str) ->
+        pos = str.search(" at ")
+        if pos == -1
+            return null
+        expr = raw.substr(0, at_index)
+        raw_subs = raw.substr(at_index + 3, raw.length - at_index - 3)
+
+        return {type: "at", expr: expr, subs: subs}
+    parseLet: (str) ->
+        return {error: "let"}
+    parse: (str) ->
+        return {error: "full"}
+    toMathematica: (tree) ->
+        return "x^2"
+}
+
 Controller = {
     url: 'http://127.0.0.1:8000/'
-    get: (msg, callback, err_callback) ->
-        $.post( Controller.url, {data: translate(msg)}, callback )
-            .error(err_callback)
+    get: (msg, callback, ajaxerr_callback, syntaxerr_callback) ->
+        tree = Parser.parse(msg)
+        if tree.error?
+            syntaxerr_callback(tree.error)
+        else
+            $.post( Controller.url, {data: Parser.toMathematica(tree)}, callback )
+                .error(ajaxerr_callback)
 }
 
 Prompt = {
@@ -34,7 +90,7 @@ Prompt = {
         Prompt.history.push(cmd)
         Prompt.history_pos = Prompt.history.length
         Prompt.hist(Prompt.count + ">", cmd)
-        out = Controller.get(cmd, Prompt.success, Prompt.error)
+        out = Controller.get(cmd, Prompt.success, Prompt.ajaxError, Prompt.syntaxError)
     success: (out) ->
         segments = out.split('%%%')
         segments[0].replace(/^\s\s*/, '').replace(/\s\s*$/, '');
@@ -62,10 +118,14 @@ Prompt = {
         Prompt.active.find(".prompt-p").text(Prompt.count + ">")
         Prompt.active.find(".prompt-c").val("").focus()
         $('html, body').scrollTop($(document).height())
-    error: (out) ->
+    ajaxError: (out) ->
         errline = $('<div class="output error"/>').text("Connection error")
         $('#container').append(errline)
-        Prompt.next()
+        Prompt.next(false)
+    syntaxError: (out) ->
+        errline = $('<div class="output error"/>').text("Syntax error: " + out)
+        $('#container').append(errline)
+        Prompt.next(false)
     up: ->
         if Prompt.history_pos > 0
             --Prompt.history_pos
