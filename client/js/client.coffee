@@ -1,7 +1,8 @@
 Controller = {
     url: 'http://127.0.0.1:8000/'
-    get: (msg, callback) ->
+    get: (msg, callback, err_callback) ->
         $.post( Controller.url, {data: translate(msg)}, callback )
+            .error(err_callback)
 }
 
 Prompt = {
@@ -32,8 +33,8 @@ Prompt = {
         Prompt.history.push(cmd)
         Prompt.history_pos = Prompt.history.length
         Prompt.hist(Prompt.count + ">", cmd)
-        out = Controller.get(cmd, Prompt.next)
-    next: (out) ->
+        out = Controller.get(cmd, Prompt.success, Prompt.error)
+    success: (out) ->
         segments = out.split('%%%')
         segments[0].replace(/^\s\s*/, '').replace(/\s\s*$/, '');
         segments[1].replace(/^\s\s*/, '').replace(/\s\s*$/, '');
@@ -51,12 +52,20 @@ Prompt = {
         $('#container').append(block, line1, line2)
         MathJax.Hub.Queue(["Typeset", MathJax.Hub, block[0]]);
 
-        Prompt.count += 1
+        Prompt.next(true)
+    next: (success) ->
+        if success
+            Prompt.count += 1
         Prompt.active.show()
         Prompt.dots.hide()
         Prompt.active.find(".prompt-p").text(Prompt.count + ">")
         Prompt.active.find(".prompt-c").val("").focus()
         $('html, body').scrollTop($(document).height())
+    error: (out) ->
+        errline = $('<div class="output error"/>').text("Connection error")
+        $('#container').append(errline)
+        console.log(out)
+        Prompt.next()
     up: ->
         if Prompt.history_pos > 0
             --Prompt.history_pos

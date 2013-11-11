@@ -3,10 +3,10 @@ var Controller, Prompt;
 
 Controller = {
   url: 'http://127.0.0.1:8000/',
-  get: function(msg, callback) {
+  get: function(msg, callback, err_callback) {
     return $.post(Controller.url, {
       data: translate(msg)
-    }, callback);
+    }, callback).error(err_callback);
   }
 };
 
@@ -46,9 +46,9 @@ Prompt = {
     Prompt.history.push(cmd);
     Prompt.history_pos = Prompt.history.length;
     Prompt.hist(Prompt.count + ">", cmd);
-    return out = Controller.get(cmd, Prompt.next);
+    return out = Controller.get(cmd, Prompt.success, Prompt.error);
   },
-  next: function(out) {
+  success: function(out) {
     var block, line1, line2, segments;
     segments = out.split('%%%');
     segments[0].replace(/^\s\s*/, '').replace(/\s\s*$/, '');
@@ -68,12 +68,24 @@ Prompt = {
     Prompt.results.push(segments[1]);
     $('#container').append(block, line1, line2);
     MathJax.Hub.Queue(["Typeset", MathJax.Hub, block[0]]);
-    Prompt.count += 1;
+    return Prompt.next(true);
+  },
+  next: function(success) {
+    if (success) {
+      Prompt.count += 1;
+    }
     Prompt.active.show();
     Prompt.dots.hide();
     Prompt.active.find(".prompt-p").text(Prompt.count + ">");
     Prompt.active.find(".prompt-c").val("").focus();
     return $('html, body').scrollTop($(document).height());
+  },
+  error: function(out) {
+    var errline;
+    errline = $('<div class="output error"/>').text("Connection error");
+    $('#container').append(errline);
+    console.log(out);
+    return Prompt.next();
   },
   up: function() {
     if (Prompt.history_pos > 0) {
