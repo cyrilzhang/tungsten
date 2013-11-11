@@ -97,15 +97,22 @@ $ ->
     $("#toggl1").click( (e) ->
         $("#toggl1").toggleClass("down")
         Prompt.toggles[0] = not Prompt.toggles[0]
-        if Prompt.toggles[0] then $(".texrender").show() else $(".texrender").hide() )
+        if Prompt.toggles[0] then $(".texrender").show() else $(".texrender").hide()
+        window.scrollTo(0, document.body.scrollHeight)
+    )
+
     $("#toggl2").click( (e) ->
         $("#toggl2").toggleClass("down")
         Prompt.toggles[1] = not Prompt.toggles[1]
-        if Prompt.toggles[1] then $(".texcode").show() else $(".texcode").hide() )
+        if Prompt.toggles[1] then $(".texcode").show() else $(".texcode").hide()
+        window.scrollTo(0, document.body.scrollHeight)
+    )
     $("#toggl3").click( (e) ->
         $("#toggl3").toggleClass("down")
         Prompt.toggles[2] = not Prompt.toggles[2]
-        if Prompt.toggles[2] then $(".mathcode").show() else $(".mathcode").hide() )
+        if Prompt.toggles[2] then $(".mathcode").show() else $(".mathcode").hide()
+        window.scrollTo(0, document.body.scrollHeight)
+    )
     $(window).keydown((e) ->
         switch e.which
             when 13 then Prompt.submit()

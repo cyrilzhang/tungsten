@@ -123,28 +123,31 @@ $(function() {
     $("#toggl1").toggleClass("down");
     Prompt.toggles[0] = !Prompt.toggles[0];
     if (Prompt.toggles[0]) {
-      return $(".texrender").show();
+      $(".texrender").show();
     } else {
-      return $(".texrender").hide();
+      $(".texrender").hide();
     }
+    return window.scrollTo(0, document.body.scrollHeight);
   });
   $("#toggl2").click(function(e) {
     $("#toggl2").toggleClass("down");
     Prompt.toggles[1] = !Prompt.toggles[1];
     if (Prompt.toggles[1]) {
-      return $(".texcode").show();
+      $(".texcode").show();
     } else {
-      return $(".texcode").hide();
+      $(".texcode").hide();
     }
+    return window.scrollTo(0, document.body.scrollHeight);
   });
   $("#toggl3").click(function(e) {
     $("#toggl3").toggleClass("down");
     Prompt.toggles[2] = !Prompt.toggles[2];
     if (Prompt.toggles[2]) {
-      return $(".mathcode").show();
+      $(".mathcode").show();
     } else {
-      return $(".mathcode").hide();
+      $(".mathcode").hide();
     }
+    return window.scrollTo(0, document.body.scrollHeight);
   });
   $(window).keydown(function(e) {
     switch (e.which) {
