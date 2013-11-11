@@ -13,7 +13,14 @@
   <script type="text/x-mathjax-config">
      MathJax.Hub.Config({
         showProcessingMessages: false,
-        tex2jax: { inlineMath: [['$','$'],['\\(','\\)']], processEscapes: true }
+        tex2jax: { inlineMath: [['$','$'],['\\(','\\)']], processEscapes: true },
+         TeX: {
+          Macros: { 
+            texttt:             ['\\mathord{\\tt{\\text{#1}}}',1],
+            textsf:             ['\\mathord{\\sf{\\text{#1}}}',1],
+            emph:               ['\\textit{#1}',1],
+          }
+        }
      });
   </script>
   <script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>

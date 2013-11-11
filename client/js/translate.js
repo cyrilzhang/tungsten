@@ -64,7 +64,8 @@ function translate(raw) {
       }
     }
   }
-  return to_ret;
+
+  return line(to_ret);
 }
   
 
