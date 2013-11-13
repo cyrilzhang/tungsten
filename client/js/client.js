@@ -202,7 +202,11 @@ Compiler = {
 };
 
 Controller = {
-  url: 'http://127.0.0.1:8000/',
+  ip: '127.0.0.1',
+  port: '8000',
+  getUrl: function() {
+    return "http://" + Controller.ip + ":" + Controller.port + "/";
+  },
   get: function(msg, callback, ajaxerr_callback, syntaxerr_callback) {
     var compiled, data, tree;
     tree = Parser.parse(" " + msg + " ");
@@ -212,7 +216,7 @@ Controller = {
       compiled = Compiler.compile(tree);
       data = [];
       data.push("OutputData = " + compiled.query);
-      return $.post(Controller.url, {
+      return $.post(Controller.getUrl(), {
         data: data.join('')
       }, callback).error(ajaxerr_callback);
     }

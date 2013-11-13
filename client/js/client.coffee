@@ -140,7 +140,10 @@ Compiler = {
 }
 
 Controller = {
-    url: 'http://127.0.0.1:8000/'
+    ip: '127.0.0.1'
+    port: '8000'
+    getUrl: ->
+        return "http://#{Controller.ip}:#{Controller.port}/"
     get: (msg, callback, ajaxerr_callback, syntaxerr_callback) ->
         tree = Parser.parse(" " + msg + " ")
         if tree.error?
@@ -149,7 +152,7 @@ Controller = {
             compiled = Compiler.compile(tree)
             data = []
             data.push("OutputData = " + compiled.query)
-            $.post( Controller.url, {data: data.join('')}, callback )
+            $.post( Controller.getUrl(), {data: data.join('')}, callback )
                 .error(ajaxerr_callback)
 }
 

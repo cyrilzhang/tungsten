@@ -11,6 +11,9 @@
 
  var app = express();
 
+ var mathKernelPath = "/Applications/Mathematica.app/Contents/MacOS/MathKernel";
+ var port = 8000;
+
 // all environments
 app.set('port', process.env.PORT || 8000);
 app.set('views', path.join(__dirname, 'views'));
@@ -39,7 +42,7 @@ app.post('/', function(request, response){
 	var exec = require('child_process').exec, child;
     var delim = "%%%";
 
-	child = exec('/Applications/Mathematica.app/Contents/MacOS/MathKernel -noprompt | sed 1d | sed s/InputForm//g',
+	child = exec(mathKernelPath + ' -noprompt | sed 1d | sed s/InputForm//g',
 		function (error, stdout, stderr) {
             chopped = stdout.split(delim)
 			response.send([chopped[1], chopped[2]].join(delim + "\n"));
@@ -54,4 +57,4 @@ app.post('/', function(request, response){
 
 });
 
-app.listen(8000);
+app.listen(port);
