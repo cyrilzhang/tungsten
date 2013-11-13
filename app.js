@@ -37,16 +37,19 @@ app.post('/', function(request, response){
 	});
 
 	var exec = require('child_process').exec, child;
+    var delim = "%%%";
 
 	child = exec('/Applications/Mathematica.app/Contents/MacOS/MathKernel -noprompt | sed 1d | sed s/InputForm//g',
 		function (error, stdout, stderr) {
-			response.send(stdout + "\n");
+            chopped = stdout.split(delim)
+			response.send([chopped[1], chopped[2]].join(delim + "\n"));
 		});
 
-    child.stdin.write("Data = " + request.body.data + "\n" +
-    				  "TeXForm[Data]\n" +
-    				  "Print[OutputForm[\"%%%\"]]\n" +
-    				  "OutputForm[InputForm[Data]]");
+    child.stdin.write(request.body.data + "\n" +
+                      "Print[OutputForm[\"" + delim + "\"]]\n" +
+    				  "TeXForm[OutputData]\n" +
+    				  "Print[OutputForm[\"" + delim + "\"]]\n" +
+    				  "OutputForm[InputForm[OutputData]]");
     child.stdin.end();
 
 });

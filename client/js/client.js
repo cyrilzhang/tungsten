@@ -42,7 +42,12 @@ Parser = {
     if (pos === -1) {
       return null;
     }
-    expr = str.substr(0, pos);
+    expr = trimSpaces(str.substr(0, pos));
+    if (expr === "") {
+      return {
+        error: "substitution with empty expression"
+      };
+    }
     raw_subs = str.substr(pos + 4);
     prone = Parser.findProneIndices(raw_subs, "([{", ")]}", "'\"`");
     commas = [-1];
@@ -71,8 +76,8 @@ Parser = {
           error: "substitution with too many '=' tokens"
         };
       } else {
-        this_var = sub.substr(0, equals[0]);
-        this_sub = sub.substr(equals[0] + 1);
+        this_var = trimSpaces(sub.substr(0, equals[0]));
+        this_sub = trimSpaces(sub.substr(equals[0] + 1));
         if (this_var === "") {
           return {
             error: "substitution with no variable"
@@ -103,7 +108,7 @@ Parser = {
   parseLet: function(str) {
     return null;
   },
-  resolveNat: function(str) {
+  resolveNaturalLiterals: function(str) {
     var chunk, i, in_nat, pos, prone, ret, x, _i, _len;
     prone = Parser.findProneIndices(str, "", "", "'\"");
     prone.push(str.length);
@@ -125,8 +130,30 @@ Parser = {
     }
     return ret.join('');
   },
+  resolveLineVariables: function(str) {
+    var aux, hits, prev, prone, pronestr, raw_hits, x, _i, _len;
+    prone = Parser.findProneIndices(str, "", "", "'\"`");
+    prone.push(str.length);
+    aux = [];
+    prev = 0;
+    for (_i = 0, _len = prone.length; _i < _len; _i++) {
+      x = prone[_i];
+      ++prev;
+      while (prev < x) {
+        aux.push(' ');
+        ++prev;
+      }
+      aux.push(str.charAt(x));
+    }
+    pronestr = aux.join('');
+    raw_hits = _.uniq(pronestr.match(/<([1-9][0-9]*)>/g));
+    hits = raw_hits.map(function(x) {
+      return parseInt(x.substr(1, x.length - 2) - 1);
+    });
+    return hits;
+  },
   parseExpr: function(str) {
-    str = Parser.resolveNat(str);
+    str = Parser.resolveNaturalLiterals(str);
     return {
       type: "expr",
       expr: str
@@ -134,8 +161,8 @@ Parser = {
   },
   parse: function(str) {
     var p_at, p_let;
-    p_at = Parser.parseAt(str);
     p_let = Parser.parseLet(str);
+    p_at = Parser.parseAt(str);
     if (p_let !== null) {
       return null;
     }
@@ -151,7 +178,8 @@ Compiler = {
     return tree.expr;
   },
   compile: function(tree) {
-    var i, ret, sub, _i, _len, _ref;
+    var context, i, query, ret, sub, _i, _len, _ref;
+    context = [];
     if (tree.type === "at") {
       ret = [" ( ", Compiler.compileExpr(tree.body), " /. ", " { "];
       _ref = tree.subs;
@@ -163,23 +191,29 @@ Compiler = {
         ret.push(sub["var"], " -> ", Compiler.compileExpr(sub.sub));
       }
       ret.push(" } ) ");
-      return ret.join('');
+      query = ret.join('');
     } else if (tree.type === "expr") {
-      return Compiler.compileExpr(tree);
+      query = Compiler.compileExpr(tree);
     }
+    return {
+      query: query
+    };
   }
 };
 
 Controller = {
   url: 'http://127.0.0.1:8000/',
   get: function(msg, callback, ajaxerr_callback, syntaxerr_callback) {
-    var tree;
-    tree = Parser.parse(msg);
+    var compiled, data, tree;
+    tree = Parser.parse(" " + msg + " ");
     if (tree.error != null) {
       return syntaxerr_callback(tree.error);
     } else {
+      compiled = Compiler.compile(tree);
+      data = [];
+      data.push("OutputData = " + compiled.query);
       return $.post(Controller.url, {
-        data: Compiler.compile(tree)
+        data: data.join('')
       }, callback).error(ajaxerr_callback);
     }
   }
