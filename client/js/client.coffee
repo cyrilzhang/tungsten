@@ -9,8 +9,14 @@ Controller = {
             syntaxerr_callback(tree.error)
         else
             compiled = Compiler.compile(tree)
+            if compiled.error?
+                syntaxerr_callback(compiled.error)
+
             data = []
+            for line in compiled.context
+                data.push(line + '\n')
             data.push("OutputData = " + compiled.query)
+
             $.post( Controller.getUrl(), {data: data.join('')}, callback )
                 .error(ajaxerr_callback)
 }

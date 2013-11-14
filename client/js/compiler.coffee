@@ -66,7 +66,7 @@ Parser = {
                 subs.push({ var:this_var, sub: Parser.parseExpr(this_sub) })
         if subs.length == 0
             return {error: "no substitutions"}
-        
+
         return {type: "at", body: Parser.parseExpr(expr), subs: subs}
     parseLet: (str) ->
         return null
@@ -123,10 +123,23 @@ Parser = {
 }
 
 Compiler = {
+    getLineVars: (tree) ->
+        ret = []
+        if tree.type == "expr"
+            ret = tree.hits
+        else if tree.type == "at"
+            ret.push.apply(ret, Compiler.getLineVars(tree.body))
+            for sub in tree.subs
+                ret.push.apply(ret, Compiler.getLineVars(sub.sub))
+        return _.uniq(ret)
     compileExpr: (tree) ->
         return tree.expr
     compile: (tree) ->
-        context = []
+        linevars = Compiler.getLineVars(tree)
+        for lv in linevars
+            if lv >= Prompt.count
+                return {error: "invalid line variable"}
+        context = _.map( linevars, (x) -> "InternalVar#{(x+1)} = #{Prompt.results[x]}" )
 
         if tree.type == "at"
             ret = [" ( ", Compiler.compileExpr(tree.body), " /. " , " { "]
@@ -138,5 +151,5 @@ Compiler = {
         else if tree.type == "expr"
             query = Compiler.compileExpr(tree)
 
-        return {query: query}
+        return {query: query, context: context}
 }

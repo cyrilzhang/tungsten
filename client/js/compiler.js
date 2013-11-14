@@ -178,16 +178,42 @@ Parser = {
 };
 
 Compiler = {
+  getLineVars: function(tree) {
+    var ret, sub, _i, _len, _ref;
+    ret = [];
+    if (tree.type === "expr") {
+      ret = tree.hits;
+    } else if (tree.type === "at") {
+      ret.push.apply(ret, Compiler.getLineVars(tree.body));
+      _ref = tree.subs;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        sub = _ref[_i];
+        ret.push.apply(ret, Compiler.getLineVars(sub.sub));
+      }
+    }
+    return _.uniq(ret);
+  },
   compileExpr: function(tree) {
     return tree.expr;
   },
   compile: function(tree) {
-    var context, i, query, ret, sub, _i, _len, _ref;
-    context = [];
+    var context, i, linevars, lv, query, ret, sub, _i, _j, _len, _len1, _ref;
+    linevars = Compiler.getLineVars(tree);
+    for (_i = 0, _len = linevars.length; _i < _len; _i++) {
+      lv = linevars[_i];
+      if (lv >= Prompt.count) {
+        return {
+          error: "invalid line variable"
+        };
+      }
+    }
+    context = _.map(linevars, function(x) {
+      return "InternalVar" + (x + 1) + " = " + Prompt.results[x];
+    });
     if (tree.type === "at") {
       ret = [" ( ", Compiler.compileExpr(tree.body), " /. ", " { "];
       _ref = tree.subs;
-      for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
+      for (i = _j = 0, _len1 = _ref.length; _j < _len1; i = ++_j) {
         sub = _ref[i];
         if (i !== 0) {
           ret.push(" , ");
@@ -200,7 +226,8 @@ Compiler = {
       query = Compiler.compileExpr(tree);
     }
     return {
-      query: query
+      query: query,
+      context: context
     };
   }
 };

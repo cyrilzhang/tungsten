@@ -8,13 +8,21 @@ Controller = {
     return "http://" + Controller.ip + ":" + Controller.port + "/";
   },
   get: function(msg, callback, ajaxerr_callback, syntaxerr_callback) {
-    var compiled, data, tree;
+    var compiled, data, line, tree, _i, _len, _ref;
     tree = Parser.parse(" " + msg + " ");
     if (tree.error != null) {
       return syntaxerr_callback(tree.error);
     } else {
       compiled = Compiler.compile(tree);
+      if (compiled.error != null) {
+        syntaxerr_callback(compiled.error);
+      }
       data = [];
+      _ref = compiled.context;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        line = _ref[_i];
+        data.push(line + '\n');
+      }
       data.push("OutputData = " + compiled.query);
       return $.post(Controller.getUrl(), {
         data: data.join('')
