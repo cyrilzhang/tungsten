@@ -143,5 +143,5 @@ $ ->
             when 40 then Prompt.down()
             when 17, 91 then false
     ).click( (e) ->
-        Prompt.active.find(".prompt-c").focus() if e.target.id == "parent-target" )
+        Prompt.active.find(".prompt-c").focus() if e.target.id == "parent-target" or e.target.id == "wrapper" )
     Prompt.active.find(".prompt-c").focus()

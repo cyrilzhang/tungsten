@@ -191,7 +191,7 @@ $(function() {
         return false;
     }
   }).click(function(e) {
-    if (e.target.id === "parent-target") {
+    if (e.target.id === "parent-target" || e.target.id === "wrapper") {
       return Prompt.active.find(".prompt-c").focus();
     }
   });
