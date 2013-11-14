@@ -8,18 +8,15 @@ Controller = {
         if tree.error?
             syntaxerr_callback(tree.error)
             return false
-
         compiled = Compiler.compile(tree)
         if compiled.error?
             syntaxerr_callback(compiled.error)
             return false
-
-        data = []
+        full_query = []
         for line in compiled.context
-            data.push(line + '\n')
-        data.push("OutputData = " + compiled.query)
-
-        $.post( Controller.getUrl(), {data: data.join('')}, callback )
+            full_query.push(line + '\n')
+        full_query.push("OutputData = " + compiled.query)
+        $.post( Controller.getUrl(), {data: full_query.join('')}, callback )
             .error(ajaxerr_callback)
         return true
 }

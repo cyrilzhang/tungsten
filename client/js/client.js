@@ -8,7 +8,7 @@ Controller = {
     return "http://" + Controller.ip + ":" + Controller.port + "/";
   },
   get: function(msg, callback, ajaxerr_callback, syntaxerr_callback) {
-    var compiled, data, line, tree, _i, _len, _ref;
+    var compiled, full_query, line, tree, _i, _len, _ref;
     tree = Parser.parse(" " + msg + " ");
     if (tree.error != null) {
       syntaxerr_callback(tree.error);
@@ -19,15 +19,15 @@ Controller = {
       syntaxerr_callback(compiled.error);
       return false;
     }
-    data = [];
+    full_query = [];
     _ref = compiled.context;
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       line = _ref[_i];
-      data.push(line + '\n');
+      full_query.push(line + '\n');
     }
-    data.push("OutputData = " + compiled.query);
+    full_query.push("OutputData = " + compiled.query);
     $.post(Controller.getUrl(), {
-      data: data.join('')
+      data: full_query.join('')
     }, callback).error(ajaxerr_callback);
     return true;
   }
