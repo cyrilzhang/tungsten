@@ -66,7 +66,7 @@ Parser = {
                 subs.push({ var:this_var, sub: Parser.parseExpr(this_sub) })
         if subs.length == 0
             return {error: "no substitutions"}
-
+        
         return {type: "at", body: Parser.parseExpr(expr), subs: subs}
     parseLet: (str) ->
         return null
@@ -89,25 +89,27 @@ Parser = {
     resolveLineVariables: (str) ->
         prone = Parser.findProneIndices(str, "", "", "'\"`")
         prone.push(str.length)
-        aux = []
-        prev = 0
-        for x in prone
-            ++prev
-            while prev < x
-                aux.push(' ')
-                ++prev
-            aux.push(str.charAt(x))
-        pronestr = aux.join('')
 
-        raw_hits = _.uniq( pronestr.match(/<([1-9][0-9]*)>/g) )
-
+        re = /<([1-9][0-9]*)>/g
+        raw_hits = _.uniq( str.match(re) )
         hits = raw_hits.map( (x) -> parseInt( x.substr(1,x.length-2) - 1 ) )
-        
-        return hits
+
+        match_pos = -1
+        result = []
+        hits = []
+        while m = re.exec(str)
+            if _.contains(prone, m.index)
+                result.push( str.substr(match_pos+1, m.index - match_pos - 1), " InternalVar", m[1], " " )
+                match_pos = m.index + m[0].length - 1
+                hits.push(parseInt(m[1]) - 1)
+        result.push( str.substr(match_pos+1) )
+        hits = _.uniq(hits)
+        return {type: "expr", expr: result.join(''), hits: hits}
 
     parseExpr: (str) ->
-        str = Parser.resolveNaturalLiterals(str)
-        return {type: "expr", expr: str}
+        ret = Parser.resolveLineVariables(str)
+        ret.expr = Parser.resolveNaturalLiterals(ret.expr)
+        return ret
     parse: (str) ->
         p_let = Parser.parseLet(str)
         p_at = Parser.parseAt(str)

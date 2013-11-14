@@ -131,33 +131,37 @@ Parser = {
     return ret.join('');
   },
   resolveLineVariables: function(str) {
-    var aux, hits, prev, prone, pronestr, raw_hits, x, _i, _len;
+    var hits, m, match_pos, prone, raw_hits, re, result;
     prone = Parser.findProneIndices(str, "", "", "'\"`");
     prone.push(str.length);
-    aux = [];
-    prev = 0;
-    for (_i = 0, _len = prone.length; _i < _len; _i++) {
-      x = prone[_i];
-      ++prev;
-      while (prev < x) {
-        aux.push(' ');
-        ++prev;
-      }
-      aux.push(str.charAt(x));
-    }
-    pronestr = aux.join('');
-    raw_hits = _.uniq(pronestr.match(/<([1-9][0-9]*)>/g));
+    re = /<([1-9][0-9]*)>/g;
+    raw_hits = _.uniq(str.match(re));
     hits = raw_hits.map(function(x) {
       return parseInt(x.substr(1, x.length - 2) - 1);
     });
-    return hits;
-  },
-  parseExpr: function(str) {
-    str = Parser.resolveNaturalLiterals(str);
+    match_pos = -1;
+    result = [];
+    hits = [];
+    while (m = re.exec(str)) {
+      if (_.contains(prone, m.index)) {
+        result.push(str.substr(match_pos + 1, m.index - match_pos - 1), " InternalVar", m[1], " ");
+        match_pos = m.index + m[0].length - 1;
+        hits.push(parseInt(m[1]) - 1);
+      }
+    }
+    result.push(str.substr(match_pos + 1));
+    hits = _.uniq(hits);
     return {
       type: "expr",
-      expr: str
+      expr: result.join(''),
+      hits: hits
     };
+  },
+  parseExpr: function(str) {
+    var ret;
+    ret = Parser.resolveLineVariables(str);
+    ret.expr = Parser.resolveNaturalLiterals(ret.expr);
+    return ret;
   },
   parse: function(str) {
     var p_at, p_let;
