@@ -11,23 +11,25 @@ Controller = {
     var compiled, data, line, tree, _i, _len, _ref;
     tree = Parser.parse(" " + msg + " ");
     if (tree.error != null) {
-      return syntaxerr_callback(tree.error);
-    } else {
-      compiled = Compiler.compile(tree);
-      if (compiled.error != null) {
-        syntaxerr_callback(compiled.error);
-      }
-      data = [];
-      _ref = compiled.context;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        line = _ref[_i];
-        data.push(line + '\n');
-      }
-      data.push("OutputData = " + compiled.query);
-      return $.post(Controller.getUrl(), {
-        data: data.join('')
-      }, callback).error(ajaxerr_callback);
+      syntaxerr_callback(tree.error);
+      return false;
     }
+    compiled = Compiler.compile(tree);
+    if (compiled.error != null) {
+      syntaxerr_callback(compiled.error);
+      return false;
+    }
+    data = [];
+    _ref = compiled.context;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      line = _ref[_i];
+      data.push(line + '\n');
+    }
+    data.push("OutputData = " + compiled.query);
+    $.post(Controller.getUrl(), {
+      data: data.join('')
+    }, callback).error(ajaxerr_callback);
+    return true;
   }
 };
 

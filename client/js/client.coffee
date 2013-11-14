@@ -7,18 +7,21 @@ Controller = {
         tree = Parser.parse(" " + msg + " ")
         if tree.error?
             syntaxerr_callback(tree.error)
-        else
-            compiled = Compiler.compile(tree)
-            if compiled.error?
-                syntaxerr_callback(compiled.error)
+            return false
 
-            data = []
-            for line in compiled.context
-                data.push(line + '\n')
-            data.push("OutputData = " + compiled.query)
+        compiled = Compiler.compile(tree)
+        if compiled.error?
+            syntaxerr_callback(compiled.error)
+            return false
 
-            $.post( Controller.getUrl(), {data: data.join('')}, callback )
-                .error(ajaxerr_callback)
+        data = []
+        for line in compiled.context
+            data.push(line + '\n')
+        data.push("OutputData = " + compiled.query)
+
+        $.post( Controller.getUrl(), {data: data.join('')}, callback )
+            .error(ajaxerr_callback)
+        return true
 }
 
 Prompt = {
